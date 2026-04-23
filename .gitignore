@@ -1,3 +1,30 @@
 ```
-*.odin
+# Compiled and build artifacts
+*.o
+*.obj
+*.out
+build/
+dist/
+
+# Dependencies
+vendor/
+deps/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Editors
+.vscode/
+.idea/
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# OS specific
+.DS_Store
+Thumbs.db
 ```
