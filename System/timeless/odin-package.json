@@ -1,0 +1,14 @@
+{
+    "name": "timeless-os",
+    "version": "0.0.1",
+    "target": "freestanding_amd64_sysv",
+    "collections": {
+        "core": "kernel/core",
+        "mm": "kernel/mm",
+        "interrupts": "kernel/interrupts",
+        "drivers": "kernel/drivers",
+        "services": "kernel/services",
+        "arch": "kernel/arch",
+        "lib": "kernel/lib"
+    }
+}
