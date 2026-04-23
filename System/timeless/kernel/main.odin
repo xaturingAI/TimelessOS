@@ -25,7 +25,6 @@ import (
     "filesystem:zfs"
     "services:dinit"
     "scheduler"
-    "loader"
 )
 
 // UEFI Entry Point
@@ -150,20 +149,11 @@ load_init_process :: proc() {
     for path in init_paths {
         log.info("ELF Loader: Trying %s...", path)
         
-        // Use the ELF loader to create process from binary
-        process := loader.create_process(path, "init")
+        // Create user process from ELF binary using our new process management
+        pid := kernel.create_user_process(path, {})
         
-        if process != nil {
-            log.info("ELF Loader: Successfully loaded %s", path)
-            log.info("  Entry point: 0x%X", process.entry_point)
-            log.info("  Base address: 0x%X", process.base_address)
-            log.info("  End address: 0x%X", process.end_address)
-            log.info("  Stack top: 0x%X", process.stack_pointer)
-            
-            // Add process to scheduler
-            scheduler.add_process(process)
-            
-            log.info("ELF Loader: Init process added to scheduler")
+        if pid != 0 {
+            log.info("ELF Loader: Successfully loaded %s (PID=%d)", path, pid)
             return
         }
     }
@@ -177,11 +167,9 @@ load_init_process :: proc() {
 create_test_process :: proc() {
     log.info("Creating minimal test process...")
     
-    // This would be replaced with actual binary loading
-    // For now, just create idle thread as before
-    scheduler.create_idle_thread()
-    
-    log.info("Test process created (fallback mode)")
+    // For now, just create a kernel thread as a placeholder
+    // In the future, this could create a minimal ELF in-memory
+    log.warn("Test process creation not fully implemented")
 }
 
 // GPU Driver Initialization
