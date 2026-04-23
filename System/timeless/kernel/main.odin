@@ -6,7 +6,6 @@ package main
 import (
     "core:log"
     "core:panic"
-    "arch:x86_64/early_init"
     "arch:x86_64/cpu"
     "mm:physical"
     "mm:virtual"
@@ -26,6 +25,7 @@ import (
     "filesystem:zfs"
     "services:dinit"
     "scheduler"
+    "loader"
 )
 
 // UEFI Entry Point
@@ -127,8 +127,9 @@ efi_main :: proc(handle: rawptr, system_table: rawptr) -> c.int {
     log.info("Starting user-space environment...")
     
     // Create first user process (init)
-    // This would be replaced with actual user space loader
-    create_first_user_process()
+    // Load and execute /sbin/init from filesystem
+    log.info("Loading init process from /sbin/init...")
+    load_init_process()
     
     // Enter main scheduler loop
     // The idle thread will run when no other threads are ready
@@ -137,6 +138,51 @@ efi_main :: proc(handle: rawptr, system_table: rawptr) -> c.int {
     return 0
 }
 
+
+// Load Init Process from ELF Binary
+// Loads /sbin/init or /bin/init from filesystem using ELF loader
+load_init_process :: proc() {
+    log.info("ELF Loader: Attempting to load init process...")
+    
+    // Try multiple init paths
+    init_paths := ["/sbin/init", "/bin/init", "/init"]
+    
+    for path in init_paths {
+        log.info("ELF Loader: Trying %s...", path)
+        
+        // Use the ELF loader to create process from binary
+        process := loader.create_process(path, "init")
+        
+        if process != nil {
+            log.info("ELF Loader: Successfully loaded %s", path)
+            log.info("  Entry point: 0x%X", process.entry_point)
+            log.info("  Base address: 0x%X", process.base_address)
+            log.info("  End address: 0x%X", process.end_address)
+            log.info("  Stack top: 0x%X", process.stack_pointer)
+            
+            // Add process to scheduler
+            scheduler.add_process(process)
+            
+            log.info("ELF Loader: Init process added to scheduler")
+            return
+        }
+    }
+    
+    // If no init binary found, create a minimal test process
+    log.warn("ELF Loader: No init binary found, creating test process...")
+    create_test_process()
+}
+
+// Create Test Process (fallback if no init binary)
+create_test_process :: proc() {
+    log.info("Creating minimal test process...")
+    
+    // This would be replaced with actual binary loading
+    // For now, just create idle thread as before
+    scheduler.create_idle_thread()
+    
+    log.info("Test process created (fallback mode)")
+}
 
 // GPU Driver Initialization
 // Detects hardware and loads appropriate driver
@@ -274,33 +320,13 @@ kernel_main_loop :: proc() {
     }
 }
 
-// Create First User Process
+// Create First User Process (DEPRECATED - Use ELF Loader Instead)
+// This function is kept for historical reference only
 // Sets up initial user-space process with proper privilege levels
 create_first_user_process :: proc() {
-    log.info("Creating first user process (init)...")
-    
-    // Allocate user stack
-    user_stack_size := 8192
-    user_stack := heap.alloc(user_stack_size)
-    user_stack_top := cast(u64)(user_stack) + u64(user_stack_size)
-    
-    // Create kernel stack for the process
-    kernel_stack_size := 8192
-    kernel_stack := heap.alloc(kernel_stack_size)
-    kernel_stack_top := cast(u64)(kernel_stack) + u64(kernel_stack_size)
-    
-    // Set up page tables for user space
-    // TODO: Implement proper user space memory mapping
-    log.info("User process stacks: user=0x%X, kernel=0x%X", user_stack_top, kernel_stack_top)
-    
-    // Create the init process
-    // For now, create a simple loop that makes syscalls
-    // In production, this would load an actual binary
-    scheduler.create_idle_thread()
-    
-    log.info("First user process created")
+    log.warn("create_first_user_process is deprecated, use load_init_process instead")
+    load_init_process()
 }
-
 
 // Kernel Panic Handler
 #[no_return]
