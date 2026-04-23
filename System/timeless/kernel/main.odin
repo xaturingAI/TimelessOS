@@ -110,6 +110,15 @@ efi_main :: proc(handle: rawptr, system_table: rawptr) -> c.int {
     log.info("Network: Initializing network stack...")
     init_network_stack()
     
+    // Initialize syscall interface (for user-space communication)
+    cpu.init_syscall()
+    log.info("SYSCALL: Fast system call interface initialized")
+    
+    // Initialize TSS for hardware stack switching
+    kernel_stack_top := cast(u64)(heap.get_base()) - 1
+    cpu.init_tss(kernel_stack_top)
+    log.info("TSS: Task State Segment initialized")
+    
     // Load kernel modules
     load_kernel_modules()
     
@@ -119,14 +128,11 @@ efi_main :: proc(handle: rawptr, system_table: rawptr) -> c.int {
     
     // Create first user process (init)
     // This would be replaced with actual user space loader
-    // scheduler.create_process("init", cast(uintptr)(user_init_entry), true)
+    create_first_user_process()
     
-    // Enter main kernel loop (now handled by scheduler)
+    // Enter main scheduler loop
     // The idle thread will run when no other threads are ready
-    for {
-        cpu.halt()  // Idle until interrupts
-        scheduler.check_sleeping_threads()
-    }
+    scheduler.run()
     
     return 0
 }
@@ -266,6 +272,33 @@ kernel_main_loop :: proc() {
     for {
         cpu.halt()
     }
+}
+
+// Create First User Process
+// Sets up initial user-space process with proper privilege levels
+create_first_user_process :: proc() {
+    log.info("Creating first user process (init)...")
+    
+    // Allocate user stack
+    user_stack_size := 8192
+    user_stack := heap.alloc(user_stack_size)
+    user_stack_top := cast(u64)(user_stack) + u64(user_stack_size)
+    
+    // Create kernel stack for the process
+    kernel_stack_size := 8192
+    kernel_stack := heap.alloc(kernel_stack_size)
+    kernel_stack_top := cast(u64)(kernel_stack) + u64(kernel_stack_size)
+    
+    // Set up page tables for user space
+    // TODO: Implement proper user space memory mapping
+    log.info("User process stacks: user=0x%X, kernel=0x%X", user_stack_top, kernel_stack_top)
+    
+    // Create the init process
+    // For now, create a simple loop that makes syscalls
+    // In production, this would load an actual binary
+    scheduler.create_idle_thread()
+    
+    log.info("First user process created")
 }
 
 

@@ -7,8 +7,10 @@ import (
     "core:mem"
     "core:log"
     "arch:x86_64/cpu"
+    "arch:x86_64"
     "mm:heap"
     "scheduler"
+    "interrupts:pic"
 )
 
 // IDT Entry Count
@@ -297,9 +299,10 @@ load_idt :: proc() {
 }
 
 
-// ISR Stub Declarations (implemented in assembly)
-// These are defined in arch/x86_64/isr_stubs.odin or .asm
+// ISR Stub Declarations (implemented in arch/x86_64/isr_stubs.odin)
+// These are the actual assembly implementations that save/restore registers
 
+// Exception handlers (vectors 0-31) - defined in arch.x86_64.isr_stubs
 extern isr_divide_error:      proc()
 extern isr_debug_exception:   proc()
 extern isr_nmi:               proc()
@@ -323,7 +326,7 @@ extern isr_simd_exception:    proc()
 extern isr_virtualization:    proc()
 extern isr_control_protection: proc()
 
-// Hardware IRQ handlers
+// Hardware IRQ handlers (vectors 32-47) - defined in arch.x86_64.isr_stubs
 extern isr_irq0:  proc()  // Timer
 extern isr_irq1:  proc()  // Keyboard
 extern isr_irq2:  proc()
@@ -341,7 +344,7 @@ extern isr_irq13: proc()
 extern isr_irq14: proc()
 extern isr_irq15: proc()
 
-// Syscall handlers
+// Syscall handlers - defined in arch.x86_64.isr_stubs
 extern isr_syscall_legacy: proc()
 
 

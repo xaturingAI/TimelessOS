@@ -164,3 +164,10 @@ is_pending :: proc(irq: u8) -> bool {
     
     return (isr & (1 << irq)) != 0
 }
+
+
+// Send EOI for Timer (IRQ0)
+send_eoi_timer :: proc() {
+    // Timer is always on master PIC (IRQ0-IRQ7)
+    io.outb(PIC1_COMMAND, PIC_EOI)
+}
