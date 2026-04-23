@@ -25,6 +25,7 @@ import (
     "filesystem:xfs"
     "filesystem:zfs"
     "services:dinit"
+    "scheduler"
 )
 
 // UEFI Entry Point
@@ -74,6 +75,10 @@ efi_main :: proc(handle: rawptr, system_table: rawptr) -> c.int {
     cpu.enable_interrupts()
     log.info("Interrupts: Enabled")
     
+    // Initialize scheduler (before drivers that might block)
+    scheduler.init()
+    log.info("Scheduler: Process scheduler initialized")
+    
     // Initialize basic drivers
     vga.init()
     log.info("VGA: Text mode initialized (80x25)")
@@ -112,8 +117,16 @@ efi_main :: proc(handle: rawptr, system_table: rawptr) -> c.int {
     log.info("Kernel initialization complete")
     log.info("Starting user-space environment...")
     
-    // Enter main kernel loop
-    kernel_main_loop()
+    // Create first user process (init)
+    // This would be replaced with actual user space loader
+    // scheduler.create_process("init", cast(uintptr)(user_init_entry), true)
+    
+    // Enter main kernel loop (now handled by scheduler)
+    // The idle thread will run when no other threads are ready
+    for {
+        cpu.halt()  // Idle until interrupts
+        scheduler.check_sleeping_threads()
+    }
     
     return 0
 }
@@ -246,11 +259,12 @@ load_kernel_modules :: proc() {
 }
 
 
-// Main Kernel Loop
+// Main Kernel Loop (deprecated - scheduler handles this now)
 kernel_main_loop :: proc() {
-    // Idle loop - scheduler takes over from here
+    // This function is kept for compatibility but is no longer used
+    // The scheduler's idle thread now handles CPU idle time
     for {
-        cpu.halt() // Wait for interrupts
+        cpu.halt()
     }
 }
 
