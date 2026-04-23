@@ -8,6 +8,7 @@ import (
     "core:log"
     "arch:x86_64/cpu"
     "mm:heap"
+    "scheduler"
 )
 
 // IDT Entry Count
@@ -398,6 +399,12 @@ handle_timer_tick :: proc() {
     // Update system time
     // Schedule tasks
     // Update timeouts
+    
+    // Call scheduler for preemption
+    scheduler.timer_tick()
+    
+    // Check for sleeping threads to wake up
+    scheduler.check_sleeping_threads()
 }
 
 
