@@ -18,7 +18,7 @@ TimelessOS is a modern x86_64 kernel featuring:
 
 Project Structure
 
-timeless-os/
+'' timeless-os/ '' 
 ├── boot/                    # Boot-related files
 
 ├── kernel/
@@ -58,7 +58,7 @@ timeless-os/
 │   └── lib/                # Kernel libraries
 ├── build/                  # Build output
 ├── scripts/                # Build scripts
-└── docs/                   # Documentation
+└── docs/                   # Documentation '' 
 
 Requirements
 Build Tools
