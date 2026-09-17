@@ -20,6 +20,7 @@ Project Structure
 
 timeless-os/
 ├── boot/                    # Boot-related files
+
 ├── kernel/
 │   ├── main.odin           # Kernel entry point
 │   ├── core/               # Core kernel utilities
@@ -27,10 +28,12 @@ timeless-os/
 │   │   ├── physical.odin   # Physical frame allocator
 │   │   ├── virtual.odin    # Virtual memory/paging
 │   │   └── heap.odin       # Kernel heap
+
 │   ├── interrupts/         # Interrupt handling
 │   │   ├── idt.odin        # IDT setup
 │   │   ├── pic.odin        # PIC controller
 │   │   └── apic.odin       # APIC controller
+
 │   ├── drivers/            # Device drivers
 │   │   ├── serial/uart.odin    # Serial console
 │   │   ├── video/vga.odin      # VGA text mode
@@ -44,6 +47,8 @@ timeless-os/
 │   │       ├── nvidia-open/    # Nouveau-style
 │   │       ├── nvidia-proprietary/
 │   │       └── virtual/        # VM graphics
+
+
 │   ├── services/           # System services
 │   │   └── dinit.odin      # Init system
 │   ├── arch/x86_64/        # Architecture-specific code
