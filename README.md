@@ -18,7 +18,8 @@ Timeless OS is a modern x86_64 kernel featuring:
 
 Project Structure
 
-'' timeless-os/ '' 
+... 
+Timeless-os/ 
 ├── boot/                    # Boot-related files
 
 **├── kernel/
@@ -59,7 +60,7 @@ Project Structure
 ├── build/                  # Build output
 ├── scripts/                # Build scripts
 └── docs/                   # Documentation '' 
-
+...
 Requirements
 Build Tools
 
