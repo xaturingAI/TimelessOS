@@ -1,5 +1,5 @@
 # TimelessOS
-A vibecode OS, that I'm working on hand coding out  once i have the basic layout of the kernel made in Odin 
+A vibe code OS, that I'm working on hand coding out  once i have the basic layout of the kernel made in Odin 
 
 
 TimelessOS
@@ -7,7 +7,7 @@ TimelessOS
 A 64-bit UEFI-based operating system written in Odin.
 Overview
 
-TimelessOS is a modern x86_64 kernel featuring:
+Timeless OS is a modern x86_64 kernel featuring:
 
     UEFI Boot - Boots via rEFInd bootloader
     Odin Language - Primary kernel language for safety and clarity
@@ -21,7 +21,7 @@ Project Structure
 '' timeless-os/ '' 
 ├── boot/                    # Boot-related files
 
-├── kernel/
+**├── kernel/
 │   ├── main.odin           # Kernel entry point
 │   ├── core/               # Core kernel utilities
 │   ├── mm/                 # Memory management
@@ -32,7 +32,7 @@ Project Structure
 │   ├── interrupts/         # Interrupt handling
 │   │   ├── idt.odin        # IDT setup
 │   │   ├── pic.odin        # PIC controller
-│   │   └── apic.odin       # APIC controller
+│   │   └── apic.odin       # APIC controller**
 
 │   ├── drivers/            # Device drivers
 │   │   ├── serial/uart.odin    # Serial console
